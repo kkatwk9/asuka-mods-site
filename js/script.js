@@ -1,64 +1,238 @@
-:root{
-  --bg:#070707;
-  --panel:#0f0f0f;
-  --muted:#bfbfbf;
-  --accent:#e6e6e6;
-  --card-shadow: rgba(0,0,0,0.6);
-}
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:var(--accent);display:flex;min-height:100vh}
-a{color:inherit}
+// js/script.js — ASUKA interactive + admin (localStorage)
+// Minimal, dependency-free
+(function(){
+  const $ = (s, r=document)=>r.querySelector(s);
+  const $$ = (s, r=document)=>Array.from(r.querySelectorAll(s));
+  const uid = ()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 
-/* SIDEBAR */
-.sidebar{width:240px;padding:18px;background:linear-gradient(#080808,#0f0f0f);height:100vh;position:fixed;overflow:auto;border-right:3px solid #111}
-.logo-wrap{margin-bottom:18px;text-align:center}
-.logo-img{max-width:200px;display:block;margin:0 auto 8px}
-.side-nav ul{list-style:none;padding:0;margin:0;font-size:14px}
-.side-nav li{padding:10px 6px;border-bottom:1px solid rgba(255,255,255,0.03);cursor:default}
-.side-nav li:hover{background:rgba(255,255,255,0.01)}
-.side-nav li.has-sub{font-weight:700}
-.side-nav li[data-cat]{cursor:pointer}
+  // default dataset (only used if nothing in storage)
+  const defaultData = {
+    redux: [
+      {id: uid(), title: "BOOM REDUX V3", thumb: "https://via.placeholder.com/640x360.png?text=BOOM", desc: "Описание BOOM REDUX V3", download:"#", youtube:"", category:"redux"},
+      {id: uid(), title: "KATANA V2 REDUX", thumb: "https://via.placeholder.com/640x360.png?text=KATANA", desc: "Описание KATANA", download:"#", youtube:"", category:"redux"}
+    ],
+    clothes: [
+      {id: uid(), title:"Sample Jacket", thumb:"https://via.placeholder.com/640x360.png?text=JACKET", desc:"A sample cloth", download:"#", youtube:"", category:"clothes"}
+    ],
+    trees: [
+      {id: uid(), title:"Pine Pack", thumb:"https://via.placeholder.com/640x360.png?text=PINE", desc:"Pine trees", download:"#", youtube:"", category:"trees"}
+    ],
+    mods: []
+  };
 
-/* MAIN */
-.main{margin-left:260px;padding:22px;flex:1}
-.top-banners{display:flex;gap:18px;align-items:center;margin-bottom:20px}
-.banner{background:linear-gradient(135deg,#111,#151515);border-radius:14px;overflow:hidden;flex:1;display:flex;align-items:center;justify-content:center;height:140px}
-.banner.large{flex:2;height:140px}
-.banner img{width:100%;height:100%;object-fit:cover;display:block;border-radius:12px}
+  const STORE_KEY = "asuka_data_v1";
+  const ADMIN_KEY = "asuka_admin_pass";
+  const DEFAULT_ADMIN_PASS = "asuka123";
 
-/* CATALOG */
-.catalog{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
-.card{display:block;background:var(--panel);border-radius:16px;padding:10px;text-decoration:none;color:var(--accent);box-shadow:0 8px 24px var(--card-shadow);transition:transform .12s, box-shadow .12s;overflow:hidden}
-.card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(0,0,0,0.7)}
-.thumb{height:150px;overflow:hidden;border-radius:10px}
-.thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.card-title{text-align:center;margin-top:10px;font-weight:700}
+  function loadData(){
+    try{
+      const raw = localStorage.getItem(STORE_KEY);
+      if(!raw){ localStorage.setItem(STORE_KEY, JSON.stringify(defaultData)); return JSON.parse(JSON.stringify(defaultData)); }
+      return JSON.parse(raw);
+    }catch(e){ console.warn(e); localStorage.setItem(STORE_KEY, JSON.stringify(defaultData)); return JSON.parse(JSON.stringify(defaultData)); }
+  }
+  function saveData(obj){ localStorage.setItem(STORE_KEY, JSON.stringify(obj)); }
 
-/* FOOTER */
-.site-footer{margin-top:36px;padding:18px;border-top:1px solid rgba(255,255,255,0.03);display:flex;justify-content:space-between}
+  let data = loadData();
+  let currentCategory = "redux";
 
-/* MODAL */
-.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:9999}
-.modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.7)}
-.modal-content{position:relative;background:var(--panel);max-width:980px;width:94%;padding:18px;border-radius:10px;z-index:10;box-shadow:0 18px 50px rgba(0,0,0,0.8)}
-.modal-close{position:absolute;right:8px;top:8px;background:#222;color:#fff;border:0;border-radius:6px;width:36px;height:36px;font-size:20px;cursor:pointer}
-.modal-downloads{margin-top:12px}
-.modal-downloads .download-btn{display:inline-block;padding:8px 12px;background:#111;border-radius:8px;color:var(--accent);text-decoration:none;border:1px solid rgba(255,255,255,0.04);margin-right:8px}
+  function renderCatalog(cat){
+    currentCategory = cat;
+    const container = document.querySelector(".catalog");
+    if(!container) return;
+    container.innerHTML = "";
+    const arr = data[cat]||[];
+    if(arr.length===0){ container.innerHTML = `<div style="color:#bbb;padding:18px">В этой категории пока нет элементов.</div>`; return; }
+    arr.forEach(item=>{
+      const a = document.createElement("a");
+      a.className = "card";
+      a.href = "javascript:void(0)";
+      a.dataset.id = item.id;
+      a.innerHTML = `<div class="thumb"><img src="${item.thumb}" alt="${item.title}"></div><div class="card-title">${item.title}</div>`;
+      a.addEventListener("click", ()=> openItem(item.id));
+      container.appendChild(a);
+    });
+  }
 
-/* ADMIN PANEL */
-.admin-panel{position:fixed;right:18px;top:18px;z-index:10000;background:rgba(8,8,8,0.95);padding:14px;border-radius:10px;max-width:420px;max-height:80vh;overflow:auto;border:1px solid rgba(255,255,255,0.04)}
-.admin-form label{display:block;margin:8px 0;font-size:14px}
-.admin-form input[type="text"], .admin-form input[type="url"], .admin-form textarea, .admin-form select{width:100%;padding:8px;background:#0b0b0b;border:1px solid rgba(255,255,255,0.04);color:var(--accent);border-radius:6px}
-.admin-actions{display:flex;gap:8px;margin-top:8px}
-.admin-actions button{padding:8px 10px;background:#222;color:#fff;border-radius:6px;border:1px solid rgba(255,255,255,0.03);cursor:pointer}
-.admin-tools{margin-top:12px}
-.admin-list h4{margin:10px 0 6px}
-.admin-list > div{margin-bottom:8px;border-top:1px solid rgba(255,255,255,0.03);padding-top:8px}
+  function openItem(id){
+    const all = Object.values(data).flat();
+    const it = all.find(x=>x.id===id);
+    if(!it) return alert("Элемент не найден");
+    $("#modalTitle").textContent = it.title;
+    $("#modalDesc").textContent = it.desc || "";
+    const v = $("#modalVideo");
+    v.innerHTML = "";
+    if(it.youtube){
+      v.innerHTML = `<iframe width="100%" height="420" src="https://www.youtube.com/embed/${encodeURIComponent(it.youtube)}" frameborder="0" allowfullscreen></iframe>`;
+    }
+    const dl = $("#modalDownloads");
+    dl.innerHTML = "";
+    if(it.download){
+      const a = document.createElement("a");
+      a.href = it.download;
+      a.target = "_blank";
+      a.className = "download-btn";
+      a.textContent = "Download";
+      dl.appendChild(a);
+    }
+    $("#itemModal").style.display = "flex";
+    $("#itemModal").setAttribute("aria-hidden","false");
+  }
 
-/* small screens */
-@media(max-width:880px){
-  .sidebar{display:none}
-  .main{margin-left:20px;padding:10px}
-  .catalog{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
-  .banner{height:120px}
-}
+  function closeModal(){
+    $("#itemModal").style.display = "none";
+    $("#itemModal").setAttribute("aria-hidden","true");
+    $("#modalVideo").innerHTML = "";
+  }
+
+  function attachSidebar(){
+    // attach clicks to li[data-cat] and plain li text mapping
+    $$("li[data-cat]").forEach(li=>{
+      li.style.cursor = "pointer";
+      li.addEventListener("click", ()=> renderCatalog(li.getAttribute("data-cat")));
+    });
+    // also items where text equals category name (fallback)
+    $$(".side-nav li").forEach(li=>{
+      if(!li.hasAttribute("data-cat")){
+        const txt = (li.textContent||"").trim().toLowerCase();
+        const map = {trees:"trees", redux:"redux", clothes:"clothes", mods:"mods"};
+        if(map[txt]){ li.style.cursor="pointer"; li.addEventListener("click", ()=> renderCatalog(map[txt])); }
+      }
+    });
+  }
+
+  // ADMIN logic
+  function toggleAdmin(){
+    const panel = $("#adminPanel");
+    if(panel.style.display === "block"){ panel.style.display = "none"; return; }
+    const saved = localStorage.getItem(ADMIN_KEY) || DEFAULT_ADMIN_PASS;
+    const entered = prompt("Admin password:");
+    if(!entered) return;
+    if(entered !== saved){ alert("Wrong password"); return; }
+    panel.style.display = "block";
+    renderAdminList();
+  }
+
+  function renderAdminList(){
+    const wrap = $("#adminList");
+    wrap.innerHTML = "";
+    Object.keys(data).forEach(cat=>{
+      const h = document.createElement("h4"); h.textContent = cat.toUpperCase(); wrap.appendChild(h);
+      data[cat].forEach(item=>{
+        const row = document.createElement("div"); row.style.display="flex"; row.style.justifyContent="space-between"; row.style.gap="8px"; row.style.alignItems="center";
+        const left = document.createElement("div"); left.textContent = item.title; left.style.flex="1";
+        const edit = document.createElement("button"); edit.textContent="Edit"; edit.dataset.edit=item.id;
+        const del = document.createElement("button"); del.textContent="Delete"; del.dataset.del=item.id;
+        row.appendChild(left); row.appendChild(edit); row.appendChild(del);
+        wrap.appendChild(row);
+      });
+    });
+    // handlers
+    $$("button[data-edit]", wrap).forEach(b=>b.addEventListener("click", e=> fillAdminForm(e.target.dataset.edit)));
+    $$("button[data-del]", wrap).forEach(b=>b.addEventListener("click", e=> { if(confirm("Удалить?")) deleteItem(e.target.dataset.del); }));
+  }
+
+  function fillAdminForm(id){
+    const all = Object.values(data).flat();
+    const it = all.find(x=>x.id===id);
+    if(!it) return alert("Not found");
+    const f = $("#adminForm");
+    f.id.value = it.id;
+    f.title.value = it.title;
+    f.thumb.value = it.thumb;
+    f.desc.value = it.desc;
+    f.download.value = it.download||"";
+    f.youtube.value = it.youtube||"";
+    f.category.value = it.category;
+    window.scrollTo({top:0, behavior:"smooth"});
+  }
+
+  function deleteItem(id){
+    Object.keys(data).forEach(cat=> data[cat] = data[cat].filter(x=>x.id!==id));
+    saveData(data); renderAdminList(); if(currentCategory) renderCatalog(currentCategory);
+  }
+
+  function resetAdminForm(){
+    const f = $("#adminForm");
+    f.reset();
+    f.id.value = "";
+  }
+
+  function exportJSON(){
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "asuka_data.json"; a.click();
+  }
+
+  function importJSON(file){
+    const r = new FileReader();
+    r.onload = e=>{
+      try{
+        const obj = JSON.parse(e.target.result);
+        if(typeof obj !== "object") throw new Error("Invalid");
+        data = Object.assign({}, obj);
+        saveData(data); renderAdminList(); if(currentCategory) renderCatalog(currentCategory); alert("Imported");
+      }catch(err){ alert("Import error: "+err.message); }
+    };
+    r.readAsText(file);
+  }
+
+  // admin form submit
+  function onAdminSubmit(e){
+    e.preventDefault();
+    const f = e.target;
+    const id = f.id.value || uid();
+    const item = {
+      id,
+      title: f.title.value,
+      thumb: f.thumb.value || "https://via.placeholder.com/640x360.png?text=No+image",
+      desc: f.desc.value,
+      download: f.download.value,
+      youtube: f.youtube.value,
+      category: f.category.value
+    };
+    // remove existing with same id (if edited)
+    Object.keys(data).forEach(cat=> data[cat] = data[cat].filter(x=>x.id!==id));
+    data[item.category] = data[item.category] || [];
+    data[item.category].unshift(item);
+    saveData(data);
+    resetAdminForm(); renderAdminList(); if(currentCategory===item.category) renderCatalog(currentCategory);
+  }
+
+  // init UI and events
+  function init(){
+    attachSidebar();
+    renderCatalog(currentCategory);
+
+    // modal
+    $("#modalClose").addEventListener("click", closeModal);
+    $("#itemModal").addEventListener("click", e=> { if(e.target.classList.contains("modal-backdrop")) closeModal(); });
+
+    // create Toggle Admin button
+    const btn = document.createElement("button");
+    btn.textContent = "Toggle Admin";
+    btn.style.position = "fixed"; btn.style.right = "12px"; btn.style.bottom = "12px";
+    btn.style.zIndex = 9999; btn.style.background="#222"; btn.style.color="#fff"; btn.style.border="1px solid rgba(255,255,255,0.04)";
+    btn.style.padding="8px 10px"; btn.style.borderRadius="8px"; document.body.appendChild(btn);
+    btn.addEventListener("click", toggleAdmin);
+
+    // admin listeners
+    $("#adminForm").addEventListener("submit", onAdminSubmit);
+    $("#adminCancel").addEventListener("click", resetAdminForm);
+    $("#exportBtn").addEventListener("click", exportJSON);
+    $("#importFile").addEventListener("change", e=> { if(e.target.files[0]) importJSON(e.target.files[0]); });
+
+    // keyboard quick open (optional): press 'a' to open admin prompt
+    document.addEventListener("keydown", e=> {
+      if(e.key === "/" && !e.ctrlKey && !e.metaKey){ e.preventDefault(); const q = prompt("Search (title contains)"); if(q){ searchAndOpen(q); } }
+    });
+  }
+
+  function searchAndOpen(q){
+    q = q.toLowerCase();
+    const all = Object.values(data).flat();
+    const found = all.find(x=> (x.title||"").toLowerCase().includes(q));
+    if(found) openItem(found.id); else alert("Not found");
+  }
+
+  document.addEventListener("DOMContentLoaded", init);
+})();
