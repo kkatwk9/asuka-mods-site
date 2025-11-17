@@ -1,119 +1,134 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>ASUKA-MODS</title>
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASUKA-MODS</title>
+
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <aside class="sidebar">
-    <div class="logo-wrap">
-      <img src="https://via.placeholder.com/220x60.png?text=ASUKA-MODS" alt="ASUKA-MODS" class="logo-img">
-    </div>
 
-    <nav class="side-nav">
-      <ul>
-        <li>MODS SHOP</li>
-        <li>AUTHOR MODS</li>
-        <li class="has-sub">REDUX
-          <ul class="sub">
-            <li data-cat="redux">ASUKA REDUX</li>
-            <li data-cat="redux">ALL REDUX</li>
-          </ul>
-        </li>
-        <li class="has-sub" data-cat="mods">WEAPONS
-          <ul class="sub">
-            <li data-cat="mods">GUNPACK</li>
-            <li data-cat="mods">REVOLVER</li>
-          </ul>
-        </li>
-        <li data-cat="clothes">CLOTHES</li>
-        <li data-cat="trees">TREES</li>
-        <li data-cat="roads">ROADS</li>
-        <li data-cat="sound">SOUND</li>
-        <li data-cat="arena">ARENA</li>
-        <li data-cat="settings">SETTINGS</li>
-        <li data-cat="bigmap">BIGMAP</li>
-        <li data-cat="minimap">MINIMAP</li>
-      </ul>
-    </nav>
-  </aside>
+<div class="wrapper">
 
-  <main class="main">
-    <header class="top-banners">
-      <a class="banner small" href="https://discord.gg/2btmxF8y" target="_blank" title="Discord (ASUKA)">
-        <img src="https://via.placeholder.com/440x140.png?text=Join+Discord" alt="banner1">
-      </a>
-      <div class="banner large">
-        <img src="https://via.placeholder.com/900x140.png?text=ASUKA+Featured" alt="banner2">
-      </div>
-      <div class="banner small">
-        <img src="https://via.placeholder.com/440x140.png?text=Socials" alt="banner3">
-      </div>
-    </header>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo">
+            <img src="img/logo.png" alt="ASUKA-MODS">
+        </div>
 
-    <section class="catalog" aria-live="polite">
-      <!-- cards will be injected here by JS -->
-    </section>
+        <ul class="menu">
+            <li data-cat="mods">MODS SHOP</li>
+            <li data-cat="authors">AUTHOR MODS</li>
 
-    <footer class="site-footer">
-      <div class="footer-left">
-        <p>Проект "ASUKA-MODS". Все права у владельцев контента.</p>
-      </div>
-      <div class="footer-right">
-        <small>© 2025 ASUKA-MODS</small>
-      </div>
-    </footer>
-  </main>
+            <li class="has-sub">REDUX
+                <ul>
+                    <li data-cat="asuka-redux">ASUKA REDUX</li>
+                    <li data-cat="all-redux">ALL REDUX</li>
+                </ul>
+            </li>
 
-  <!-- ITEM MODAL -->
-  <div id="itemModal" class="modal" aria-hidden="true">
-    <div class="modal-backdrop"></div>
-    <div class="modal-content" role="dialog" aria-modal="true">
-      <button id="modalClose" class="modal-close" aria-label="close">×</button>
-      <h2 id="modalTitle"></h2>
-      <div id="modalVideo"></div>
-      <p id="modalDesc"></p>
-      <div id="modalDownloads" class="modal-downloads"></div>
-    </div>
-  </div>
+            <li class="has-sub">WEAPONS
+                <ul>
+                    <li data-cat="gunpack">GUNPACK</li>
+                    <li data-cat="revolver">REVOLVER</li>
+                </ul>
+            </li>
 
-  <!-- ADMIN PANEL (hidden until Toggle Admin pressed) -->
-  <div id="adminPanel" class="admin-panel" style="display:none;">
-    <h3>Admin — Manage Cards</h3>
-    <form id="adminForm" class="admin-form">
-      <input name="id" type="hidden">
-      <label>Category:
-        <select name="category">
-          <option value="redux">REDUX</option>
-          <option value="clothes">CLOTHES</option>
-          <option value="trees">TREES</option>
-          <option value="mods">MODS</option>
-          <option value="others">OTHERS</option>
-        </select>
-      </label>
-      <label>Title: <input name="title" required></label>
-      <label>Thumb URL: <input name="thumb" placeholder="img/preview.png or https://..."></label>
-      <label>Description: <textarea name="desc"></textarea></label>
-      <label>Download URL: <input name="download" placeholder="https://..."></label>
-      <label>YouTube ID: <input name="youtube" placeholder="YouTube ID"></label>
-      <div class="admin-actions">
-        <button type="submit">Save</button>
-        <button type="button" id="adminCancel">Cancel</button>
-      </div>
-    </form>
+            <li data-cat="clothes">CLOTHES</li>
+            <li data-cat="trees">TREES</li>
+            <li data-cat="roads">ROADS</li>
+            <li data-cat="sound">SOUND</li>
+            <li data-cat="arena">ARENA</li>
+            <li data-cat="settings">SETTINGS</li>
+            <li data-cat="bigmap">BIGMAP</li>
+            <li data-cat="minimap">MINIMAP</li>
+        </ul>
+    </aside>
 
-    <div class="admin-tools">
-      <button id="exportBtn">Export JSON</button>
-      <input type="file" id="importFile" accept=".json">
-    </div>
+    <!-- CONTENT -->
+    <main class="content">
 
-    <div id="adminList" class="admin-list"></div>
-  </div>
+        <!-- BANNERS -->
+        <section class="banners">
+            <div class="banner">
+                <img src="img/banner1.png" alt="banner1">
+            </div>
 
-  <!-- Toggle Admin button (JS creates visible button) -->
+            <div class="banner">
+                <img src="img/banner2.png" alt="banner2">
+            </div>
 
-  <script src="js/script.js"></script>
+            <a href="https://discord.gg/2btmxF8y" target="_blank" class="banner">
+                <img src="img/banner3.png" alt="Join Discord">
+            </a>
+        </section>
+
+        <!-- CATALOG -->
+        <section class="catalog" id="catalog">
+            <!-- Cards will be inserted here dynamically -->
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            Проект "ASUKA-MODS". Все права у владельцев контента.<br>
+            © 2025 ASUKA-MODS
+        </footer>
+
+    </main>
+
+</div>
+
+<!-- JS -->
+<script src="js/script.js"></script>
+
+<!-- FALLBACK: работает даже если script.js не загрузился -->
+<script>
+(function(){
+    function attach(){
+        document.querySelectorAll("[data-cat]").forEach(el=>{
+            el.style.cursor = "pointer";
+            el.onclick = function(){
+
+                let cat = this.getAttribute("data-cat");
+
+                // Вывод категории
+                const catalog = document.getElementById("catalog");
+                catalog.innerHTML = "";
+
+                // Пробуем взять данные из localStorage
+                let raw = localStorage.getItem("asuka_data_v1");
+                let db = raw ? JSON.parse(raw) : {};
+                let list = db[cat] || [];
+
+                if(list.length === 0){
+                    catalog.innerHTML = "<div class='empty'>В этой категории пока нет карточек</div>";
+                    return;
+                }
+
+                list.forEach(item=>{
+                    let card = document.createElement("a");
+                    card.className = "card";
+                    card.href = item.link || "#";
+                    card.target = "_blank";
+                    card.innerHTML = `
+                        <div class="thumb"><img src="${item.thumb}" /></div>
+                        <div class="card-title">${item.title}</div>
+                    `;
+                    catalog.appendChild(card);
+                });
+
+            };
+        });
+    }
+
+    if(document.readyState === "loading"){
+        document.addEventListener("DOMContentLoaded", attach);
+    } else attach();
+
+})();
+</script>
+
 </body>
 </html>
