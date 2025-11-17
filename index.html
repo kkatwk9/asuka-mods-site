@@ -1,67 +1,118 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>ASUKA-MODS — Mods</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ASUKA-MODS</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <aside class="sidebar">
-    <div class="logo">ASUKA-MODS</div>
-    <nav>
+    <div class="logo-wrap">
+      <img src="https://via.placeholder.com/220x60.png?text=ASUKA-MODS" alt="ASUKA-MODS" class="logo-img">
+    </div>
+
+    <nav class="side-nav">
       <ul>
         <li>MODS SHOP</li>
         <li>AUTHOR MODS</li>
         <li class="has-sub">REDUX
-          <ul>
-            <li><a href="#">ASUKA REDUX</a></li>
-            <li><a href="#">ALL REDUX</a></li>
+          <ul class="sub">
+            <li data-cat="redux">ASUKA REDUX</li>
+            <li data-cat="redux">ALL REDUX</li>
           </ul>
         </li>
-        <li class="has-sub">WEAPONS
-          <ul>
-            <li><a href="#">GUNPACK</a></li>
-            <li><a href="#">REVOLVER</a></li>
+        <li class="has-sub" data-cat="mods">WEAPONS
+          <ul class="sub">
+            <li data-cat="mods">GUNPACK</li>
+            <li data-cat="mods">REVOLVER</li>
           </ul>
         </li>
-        <li>CLOTHES</li>
-        <li>TREES</li>
-        <li>ROADS</li>
-        <li>SOUND</li>
-        <li>ARENA</li>
-        <li>SETTINGS</li>
-        <li>BIGMAP</li>
-        <li>MINIMAP</li>
+        <li data-cat="clothes">CLOTHES</li>
+        <li data-cat="trees">TREES</li>
+        <li data-cat="roads">ROADS</li>
+        <li data-cat="sound">SOUND</li>
+        <li data-cat="arena">ARENA</li>
+        <li data-cat="settings">SETTINGS</li>
+        <li data-cat="bigmap">BIGMAP</li>
+        <li data-cat="minimap">MINIMAP</li>
       </ul>
     </nav>
   </aside>
 
   <main class="main">
     <header class="top-banners">
-      <div class="banner small"></div>
-      <div class="banner large"></div>
-      <div class="banner small"></div>
+      <a class="banner small" href="https://discord.gg/2btmxF8y" target="_blank" title="Discord (ASUKA)">
+        <img src="https://via.placeholder.com/440x140.png?text=Join+Discord" alt="banner1">
+      </a>
+      <div class="banner large">
+        <img src="https://via.placeholder.com/900x140.png?text=ASUKA+Featured" alt="banner2">
+      </div>
+      <div class="banner small">
+        <img src="https://via.placeholder.com/440x140.png?text=Socials" alt="banner3">
+      </div>
     </header>
 
-    <section class="catalog">
-      <a class="card" href="mods/boom-redux-v3.html">
-        <div class="thumb"><img src="img/placeholder.png" alt="boom"></div>
-        <div class="card-title">BOOM REDUX V3</div>
-      </a>
-
-      <a class="card" href="mods/katana-v2.html">
-        <div class="thumb"><img src="img/placeholder.png" alt="katana"></div>
-        <div class="card-title">KATANA V2 REDUX</div>
-      </a>
-
-      <a class="card" href="#">
-        <div class="thumb"><img src="img/placeholder.png" alt="sotrudnick"></div>
-        <div class="card-title">SOTRUDNICK WINTER</div>
-      </a>
-
+    <section class="catalog" aria-live="polite">
+      <!-- cards will be injected here by JS -->
     </section>
+
+    <footer class="site-footer">
+      <div class="footer-left">
+        <p>Проект "ASUKA-MODS". Все права у владельцев контента.</p>
+      </div>
+      <div class="footer-right">
+        <small>© 2025 ASUKA-MODS</small>
+      </div>
+    </footer>
   </main>
+
+  <!-- ITEM MODAL -->
+  <div id="itemModal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content" role="dialog" aria-modal="true">
+      <button id="modalClose" class="modal-close" aria-label="close">×</button>
+      <h2 id="modalTitle"></h2>
+      <div id="modalVideo"></div>
+      <p id="modalDesc"></p>
+      <div id="modalDownloads" class="modal-downloads"></div>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL (hidden until Toggle Admin pressed) -->
+  <div id="adminPanel" class="admin-panel" style="display:none;">
+    <h3>Admin — Manage Cards</h3>
+    <form id="adminForm" class="admin-form">
+      <input name="id" type="hidden">
+      <label>Category:
+        <select name="category">
+          <option value="redux">REDUX</option>
+          <option value="clothes">CLOTHES</option>
+          <option value="trees">TREES</option>
+          <option value="mods">MODS</option>
+          <option value="others">OTHERS</option>
+        </select>
+      </label>
+      <label>Title: <input name="title" required></label>
+      <label>Thumb URL: <input name="thumb" placeholder="img/preview.png or https://..."></label>
+      <label>Description: <textarea name="desc"></textarea></label>
+      <label>Download URL: <input name="download" placeholder="https://..."></label>
+      <label>YouTube ID: <input name="youtube" placeholder="YouTube ID"></label>
+      <div class="admin-actions">
+        <button type="submit">Save</button>
+        <button type="button" id="adminCancel">Cancel</button>
+      </div>
+    </form>
+
+    <div class="admin-tools">
+      <button id="exportBtn">Export JSON</button>
+      <input type="file" id="importFile" accept=".json">
+    </div>
+
+    <div id="adminList" class="admin-list"></div>
+  </div>
+
+  <!-- Toggle Admin button (JS creates visible button) -->
 
   <script src="js/script.js"></script>
 </body>
