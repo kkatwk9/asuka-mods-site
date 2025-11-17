@@ -1,17 +1,64 @@
-document.addEventListener('DOMContentLoaded', function(){
-  document.querySelectorAll('.sidebar .has-sub').forEach(item=>{
-    item.addEventListener('click', ()=>{
-      const ul = item.querySelector('ul')
-      if(!ul) return
-      ul.style.display = (ul.style.display === 'block') ? 'none' : 'block'
-    })
-  })
+:root{
+  --bg:#070707;
+  --panel:#0f0f0f;
+  --muted:#bfbfbf;
+  --accent:#e6e6e6;
+  --card-shadow: rgba(0,0,0,0.6);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,Arial;background:var(--bg);color:var(--accent);display:flex;min-height:100vh}
+a{color:inherit}
 
-  // lazy-load картинок (если используешь data-src)
-  document.querySelectorAll('img').forEach(img=>{
-    if(img.dataset && img.dataset.src && !img.src){
-      img.src = img.dataset.src
-    }
-  })
-})
+/* SIDEBAR */
+.sidebar{width:240px;padding:18px;background:linear-gradient(#080808,#0f0f0f);height:100vh;position:fixed;overflow:auto;border-right:3px solid #111}
+.logo-wrap{margin-bottom:18px;text-align:center}
+.logo-img{max-width:200px;display:block;margin:0 auto 8px}
+.side-nav ul{list-style:none;padding:0;margin:0;font-size:14px}
+.side-nav li{padding:10px 6px;border-bottom:1px solid rgba(255,255,255,0.03);cursor:default}
+.side-nav li:hover{background:rgba(255,255,255,0.01)}
+.side-nav li.has-sub{font-weight:700}
+.side-nav li[data-cat]{cursor:pointer}
 
+/* MAIN */
+.main{margin-left:260px;padding:22px;flex:1}
+.top-banners{display:flex;gap:18px;align-items:center;margin-bottom:20px}
+.banner{background:linear-gradient(135deg,#111,#151515);border-radius:14px;overflow:hidden;flex:1;display:flex;align-items:center;justify-content:center;height:140px}
+.banner.large{flex:2;height:140px}
+.banner img{width:100%;height:100%;object-fit:cover;display:block;border-radius:12px}
+
+/* CATALOG */
+.catalog{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.card{display:block;background:var(--panel);border-radius:16px;padding:10px;text-decoration:none;color:var(--accent);box-shadow:0 8px 24px var(--card-shadow);transition:transform .12s, box-shadow .12s;overflow:hidden}
+.card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(0,0,0,0.7)}
+.thumb{height:150px;overflow:hidden;border-radius:10px}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.card-title{text-align:center;margin-top:10px;font-weight:700}
+
+/* FOOTER */
+.site-footer{margin-top:36px;padding:18px;border-top:1px solid rgba(255,255,255,0.03);display:flex;justify-content:space-between}
+
+/* MODAL */
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:9999}
+.modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.7)}
+.modal-content{position:relative;background:var(--panel);max-width:980px;width:94%;padding:18px;border-radius:10px;z-index:10;box-shadow:0 18px 50px rgba(0,0,0,0.8)}
+.modal-close{position:absolute;right:8px;top:8px;background:#222;color:#fff;border:0;border-radius:6px;width:36px;height:36px;font-size:20px;cursor:pointer}
+.modal-downloads{margin-top:12px}
+.modal-downloads .download-btn{display:inline-block;padding:8px 12px;background:#111;border-radius:8px;color:var(--accent);text-decoration:none;border:1px solid rgba(255,255,255,0.04);margin-right:8px}
+
+/* ADMIN PANEL */
+.admin-panel{position:fixed;right:18px;top:18px;z-index:10000;background:rgba(8,8,8,0.95);padding:14px;border-radius:10px;max-width:420px;max-height:80vh;overflow:auto;border:1px solid rgba(255,255,255,0.04)}
+.admin-form label{display:block;margin:8px 0;font-size:14px}
+.admin-form input[type="text"], .admin-form input[type="url"], .admin-form textarea, .admin-form select{width:100%;padding:8px;background:#0b0b0b;border:1px solid rgba(255,255,255,0.04);color:var(--accent);border-radius:6px}
+.admin-actions{display:flex;gap:8px;margin-top:8px}
+.admin-actions button{padding:8px 10px;background:#222;color:#fff;border-radius:6px;border:1px solid rgba(255,255,255,0.03);cursor:pointer}
+.admin-tools{margin-top:12px}
+.admin-list h4{margin:10px 0 6px}
+.admin-list > div{margin-bottom:8px;border-top:1px solid rgba(255,255,255,0.03);padding-top:8px}
+
+/* small screens */
+@media(max-width:880px){
+  .sidebar{display:none}
+  .main{margin-left:20px;padding:10px}
+  .catalog{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+  .banner{height:120px}
+}
